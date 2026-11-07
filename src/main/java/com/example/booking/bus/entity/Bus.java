@@ -17,9 +17,11 @@ public class Bus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
     private String busNumber;
 
-    private BusType bysType;
+    @Enumerated(EnumType.STRING)
+    private BusType busType;
 
     private int totalSeats;
 }

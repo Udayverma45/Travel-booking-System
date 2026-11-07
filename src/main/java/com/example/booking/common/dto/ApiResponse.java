@@ -1,6 +1,6 @@
 package com.example.booking.common.dto;
 
-public class ApiResponse<T>(
+public record ApiResponse<T>(
         boolean success,
         String message,
         T data
