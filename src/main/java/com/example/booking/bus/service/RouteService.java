@@ -2,6 +2,7 @@ package com.example.booking.bus.service;
 
 import com.example.booking.bus.entity.Route;
 import com.example.booking.bus.repository.RouteRepository;
+import com.example.booking.common.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,7 @@ public class RouteService {
 
     public Route getRouteById(Long id){
         return routeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Route not found with id : " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Route not found with id : " + id));
     }
 
     public void deleteRoute(Long id){

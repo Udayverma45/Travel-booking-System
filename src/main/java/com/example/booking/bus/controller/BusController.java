@@ -1,7 +1,9 @@
 package com.example.booking.bus.controller;
 
+import com.example.booking.bus.dto.BusRequest;
 import com.example.booking.bus.entity.Bus;
 import com.example.booking.bus.service.BusService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,9 +17,8 @@ public class BusController {
     private final BusService busService;
 
     @PostMapping
-    public Bus addBus(@RequestBody Bus bus){
-        System.out.println("Recieved busType = " + bus.getBusType());
-        return busService.addBus(bus);
+    public Bus addBus(@Valid @RequestBody BusRequest request){
+        return busService.addBus(request);
     }
 
     @GetMapping

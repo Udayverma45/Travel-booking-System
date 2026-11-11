@@ -1,15 +1,19 @@
 package com.example.booking.bus.service;
 
+import com.example.booking.bus.dto.SeatResponse;
 import com.example.booking.bus.dto.TripRequest;
+import com.example.booking.bus.dto.TripResponse;
 import com.example.booking.bus.entity.*;
 import com.example.booking.bus.repository.TripRepository;
 import com.example.booking.bus.repository.TripSeatRepository;
-import jakarta.transaction.Transactional;
+//import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +25,7 @@ public class TripService {
     private final RouteService routeService;
 
     @Transactional
-    public Trip createTrip(TripRequest request){
+    public TripResponse createTrip(TripRequest request){
         Bus bus = busService.getBusById(request.busId());
         Route route = routeService.getRouteById(request.routeId());
 
@@ -44,14 +48,38 @@ public class TripService {
             seats.add(seat);
         }
         tripSeatRepository.saveAll(seats);
-        return savedTrip;
+        return toResponse(savedTrip);
+    }
+    @Transactional(readOnly = true)
+    public List<TripResponse> getAllTrips() {
+        return tripRepository.findAll().stream()
+                .map(this::toResponse)
+                .toList();
     }
 
-    public List<Trip> getAllTrips(){
-        return tripRepository.findAll();
+    @Transactional(readOnly = true)
+    public List<SeatResponse> getSeatsOfTrip(Long tripId) {
+        return tripSeatRepository.findByTripId(tripId).stream()
+                .map(this::toSeatResponse)
+                .toList();
     }
 
-    public List<TripSeat> getSeatsOfTrip(Long tripId){
-        return tripSeatRepository.findByTripId(tripId);
+
+    private TripResponse toResponse(Trip trip) {
+        return new TripResponse(
+                trip.getId(),
+                trip.getBus().getBusNumber(),
+                trip.getBus().getBusType(),
+                trip.getRoute().getSource(),
+                trip.getRoute().getDestination(),
+                trip.getDepartureTime(),
+                trip.getArrivalTime(),
+                trip.getBaseFare(),
+                trip.getStatus()
+        );
+    }
+
+    private SeatResponse toSeatResponse(TripSeat seat) {
+        return new SeatResponse(seat.getId(), seat.getSeatNumber(), seat.getStatus());
     }
 }
